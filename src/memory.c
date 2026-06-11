@@ -99,14 +99,7 @@ int select_victim_page(void)
 
 signed char read_memory(int frame, int offset)
 {
-    /*
-     * TODO:
-     * Retornar o byte armazenado em physical_memory[frame][offset].
-     */
-
-    (void) frame;
-    (void) offset;
-    return 0;
+    return physical_memory[frame][offset];
 }
 
 int get_page_loaded_in_frame(int frame)
