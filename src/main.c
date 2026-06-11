@@ -33,9 +33,9 @@ int main(void)
          * TODO: Implementar lógica de obtenção do número da página 
          * e do offset.
          */
-        logical_address = 0;
-        int page = 0;
-        int offset = 0;
+        logical_address = logical_address & 0xFFFF;
+        int page = (logical_address >> 8) & 0xFF;
+        int offset = logical_address & 0xFF;
 
         int frame = tlb_lookup(page);
 
