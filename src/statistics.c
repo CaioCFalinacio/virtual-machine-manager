@@ -2,9 +2,9 @@
 
 #include "statistics.h"
 
-static int total_addresses = 0;
-static int page_faults = 0;
-static int tlb_hits = 0;
+unsigned int total_addresses = 0;
+unsigned int page_faults = 0;
+unsigned int tlb_hits = 0;
 
 void statistics_init(void)
 {
@@ -15,18 +15,17 @@ void statistics_init(void)
 
 void count_address(void)
 {
-    /*TODO: Implementar contador total_addresses*/
+    total_addresses++;
 }
 
 void count_page_fault(void)
 {
-    /*TODO: Implementar contador page_faults*/
+    page_faults++;
 }
 
 void count_tlb_hit(void)
 {
-    
-    /*TODO: Implementar contador tlb_hits*/
+    tlb_hits++;
 }
 
 int get_total_addresses(void)
