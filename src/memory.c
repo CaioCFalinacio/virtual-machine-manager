@@ -42,18 +42,6 @@ static int find_free_frame(void)
 
 int handle_page_fault(int page)
 {
-    /*
-     * TODO:
-     * 1. Procurar quadro livre.
-     * 2. Se não houver quadro livre, selecionar página vítima.
-     * 3. Invalidar página vítima na tabela de páginas.
-     * 4. Remover página vítima do TLB.
-     * 5. Ler a página correta do BACKING_STORE.bin.
-     * 6. Atualizar frame_to_page.
-     * 7. Atualizar tabela de páginas.
-     * 8. Retornar número do frame.
-     */
-
     int frame = find_free_frame();
 
     if (frame == -1) {
@@ -70,18 +58,16 @@ int handle_page_fault(int page)
         frame = 0;
     }
 
-    /*
-     * TODO:
-     * Fazer fseek para page * PAGE_SIZE.
-     * Fazer fread de PAGE_SIZE bytes para physical_memory[frame].
-     */
-
     if (backing == NULL) {
         fprintf(stderr, "Erro interno: BACKING_STORE nao inicializado.\n");
         exit(1);
     }
 
-    (void) page;
+    fseek(backing, page * PAGE_SIZE, SEEK_SET);
+    fread(physical_memory[frame], 1, PAGE_SIZE, backing);
+    
+    frame_to_page[frame] = page;
+    page_table_update(page, frame);
 
     return frame;
 }
