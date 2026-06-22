@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "memory.h"
 #include "config.h"
 #include "page_table.h"
