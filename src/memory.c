@@ -47,13 +47,23 @@ int handle_page_fault(int page)
         int victim_page = select_victim_page();
 
         frame = page_table_get_frame(victim_page);
+        frame_to_page[frame] = -1;
         page_table_invalidate(victim_page);
         tlb_remove(victim_page);
-        frame_to_page[frame] = -1;
     }
 
     if (backing == NULL) {
         fprintf(stderr, "Erro interno: BACKING_STORE nao inicializado.\n");
+        exit(1);
+    }
+
+    if ((page * PAGE_SIZE + PAGE_SIZE) > (PAGE_TABLE_SIZE * PAGE_SIZE)) {
+        fprintf(stderr, "Erro: page %d fora dos limites do BACKING_STORE.\n", page);
+        exit(1);
+    }
+
+    if (frame < 0 || frame >= NUM_FRAMES) {
+        fprintf(stderr, "Erro: frame %d invalido para escrita em physical_memory.\n", frame);
         exit(1);
     }
 
@@ -89,6 +99,10 @@ int select_victim_page(void)
 
 signed char read_memory(int frame, int offset)
 {
+    if (frame < 0 || frame >= NUM_FRAMES || offset < 0 || offset >= FRAME_SIZE) {
+        return 0;
+    }
+
     return physical_memory[frame][offset];
 }
 

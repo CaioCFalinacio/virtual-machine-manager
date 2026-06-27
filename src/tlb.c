@@ -22,14 +22,11 @@ void tlb_init(void)
 
 int tlb_lookup(int page)
 {
-    /*
-     * TODO:
-     * Procurar a página no TLB.
-     * Se encontrar uma entrada válida, retornar o quadro.
-     * Caso contrário, retornar -1.
-     */
-
-    (void) page;
+    for (int i = 0; i < TLB_SIZE; i++) {
+        if (tlb[i].valid && tlb[i].page == page) {
+            return tlb[i].frame;
+        }
+    }
     return -1;
 }
 
@@ -51,6 +48,9 @@ void tlb_insert(int page, int frame)
         }
     }
 
+    if (fifo_next < 0 || fifo_next >= TLB_SIZE) {
+        fifo_next = 0;
+    }
     tlb[fifo_next].page = page;
     tlb[fifo_next].frame = frame;
     tlb[fifo_next].valid = 1;
