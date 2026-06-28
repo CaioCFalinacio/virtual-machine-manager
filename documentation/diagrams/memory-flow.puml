@@ -1,0 +1,41 @@
+@startuml
+skinparam monochrome false
+skinparam shading false
+
+title Fluxo de Tradução de Endereço - Gerenciador de Memória Virtual
+
+start
+
+:Ler Endereço Lógico de 32 bits;
+:Aplicar Máscara de Bits (0xFFFF);
+:Isolar Número da Página (bits 8-15) e Offset (bits 0-7);
+
+if (Consulta ao TLB: TLB Hit?) then (Sim)
+  :Extrair Número do Quadro do TLB;
+else (Não / TLB Miss)
+  if (Consulta à Tabela de Páginas: Página Residente?) then (Sim / Page Hit)
+    :Atualizar o TLB (Política FIFO se cheio);
+    :Extrair Número do Quadro da Tabela;
+  else (Não / Page Fault)
+    :Ocorrência de Page Fault;
+    if (Existe Quadro Livre na Memória Física?) then (Sim)
+      :Alocar Próximo Quadro Livre;
+    else (Não / RAM Cheia)
+      :Executar Algoritmo de Substituição (Aging);
+      :Identificar Página com Menor Contador;
+      :Invalidar Página Antiga na Tabela e no TLB;
+      :Liberar Quadro da Página Vítima;
+    endif
+    :Calcular Posição no Disco (Página * 256);
+    :Ler 256 bytes do BACKING_STORE.bin;
+    :Gravar Dados no Quadro da Memória Física;
+    :Atualizar Tabela de Páginas (Válida + Quadro);
+    :Atualizar o TLB (Política FIFO se cheio);
+  endif
+endif
+
+:Gerar Endereço Físico (Quadro + Offset);
+:Acessar Memória Física e Retornar Byte;
+
+stop
+@enduml
