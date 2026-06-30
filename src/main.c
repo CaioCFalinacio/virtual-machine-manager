@@ -62,10 +62,7 @@ int main(void)
         page_table_set_reference(page);
         page_table_update_aging();
         
-        /*
-        * TODO: Implementar cálculo do physical_address.
-        */
-        int physical_address = 0;
+        int physical_address = frame * FRAME_SIZE + offset;
         signed char value = read_memory(frame, offset);
 
         printf("Logical address: %d Physical address: %d Value: %d\n",

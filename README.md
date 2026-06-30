@@ -58,15 +58,3 @@ ou
 ```bash
 ./vm < data/addresses_location.txt
 ```
-
-## Observação
-
-As funções principais estão propositalmente incompletas e marcadas com `TODO`.
-Vocês devem implementar a lógica de:
-
-- Tradução de endereços;
-- Tabela de páginas;
-- TLB com FIFO;
-- Tratamento de page fault;
-- Substituição de páginas com LRU aproximado;
-- Estatísticas.

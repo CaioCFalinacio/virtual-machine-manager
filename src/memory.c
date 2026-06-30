@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "memory.h"
 #include "config.h"
 #include "page_table.h"
@@ -47,19 +46,24 @@ int handle_page_fault(int page)
     if (frame == -1) {
         int victim_page = select_victim_page();
 
-        /*
-         * TODO:
-         * Obter o quadro da página vítima.
-         * Invalidar tabela e TLB.
-         */
-
-        (void) victim_page;
-
-        frame = 0;
+        frame = page_table_get_frame(victim_page);
+        frame_to_page[frame] = -1;
+        page_table_invalidate(victim_page);
+        tlb_remove(victim_page);
     }
 
     if (backing == NULL) {
         fprintf(stderr, "Erro interno: BACKING_STORE nao inicializado.\n");
+        exit(1);
+    }
+
+    if ((page * PAGE_SIZE + PAGE_SIZE) > (PAGE_TABLE_SIZE * PAGE_SIZE)) {
+        fprintf(stderr, "Erro: page %d fora dos limites do BACKING_STORE.\n", page);
+        exit(1);
+    }
+
+    if (frame < 0 || frame >= NUM_FRAMES) {
+        fprintf(stderr, "Erro: frame %d invalido para escrita em physical_memory.\n", frame);
         exit(1);
     }
 
@@ -74,17 +78,31 @@ int handle_page_fault(int page)
 
 int select_victim_page(void)
 {
-    /*
-     * TODO:
-     * Selecionar a página válida com menor aging_counter.
-     * Em caso de empate, qualquer critério consistente pode ser usado.
-     */
+    int victim = -1;
+    unsigned char min_counter = 0xFF;
 
-    return 0;
+    for (int i = 0; i < PAGE_TABLE_SIZE; i++) {
+        if (!page_table_is_valid(i)) {
+            continue;
+        }
+
+        unsigned char counter = page_table_get_aging_counter(i);
+
+        if (victim == -1 || counter < min_counter) {
+            min_counter = counter;
+            victim = i;
+        }
+    }
+
+    return victim;
 }
 
 signed char read_memory(int frame, int offset)
 {
+    if (frame < 0 || frame >= NUM_FRAMES || offset < 0 || offset >= FRAME_SIZE) {
+        return 0;
+    }
+
     return physical_memory[frame][offset];
 }
 

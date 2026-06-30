@@ -41,7 +41,11 @@ void page_table_invalidate(int page)
 
 void page_table_set_reference(int page)
 {
+<<<<<<< HEAD
     if (page >= 0 && page < PAGE_TABLE_SIZE) {
+=======
+    if (page >= 0 && page < PAGE_TABLE_SIZE && page_table[page].valid) {
+>>>>>>> 5969e3f5d3ef0b3440bea494471f5a1a5e8cd091
         page_table[page].reference_bit = 1;
     }
 }
@@ -49,6 +53,7 @@ void page_table_set_reference(int page)
 void page_table_update_aging(void)
 {
     for (int i = 0; i < PAGE_TABLE_SIZE; i++) {
+<<<<<<< HEAD
         if (page_table[i].valid == 1) {
             page_table[i].aging_counter >>= 1;
             if (page_table[i].reference_bit == 1) {
@@ -56,6 +61,19 @@ void page_table_update_aging(void)
             }
             page_table[i].reference_bit = 0;
         }
+=======
+        if (!page_table[i].valid) {
+            continue;
+        }
+
+        page_table[i].aging_counter >>= 1;
+
+        if (page_table[i].reference_bit) {
+            page_table[i].aging_counter |= 0x80;
+        }
+
+        page_table[i].reference_bit = 0;
+>>>>>>> 5969e3f5d3ef0b3440bea494471f5a1a5e8cd091
     }
 }
 
