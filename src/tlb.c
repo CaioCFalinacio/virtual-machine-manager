@@ -23,7 +23,7 @@ void tlb_init(void)
 int tlb_lookup(int page)
 {
     for (int i = 0; i < TLB_SIZE; i++) {
-        if (tlb[i].valid && tlb[i].page == page) {
+        if (tlb[i].valid == 1 && tlb[i].page == page) {
             return tlb[i].frame;
         }
     }
